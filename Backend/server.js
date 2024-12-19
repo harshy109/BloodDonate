@@ -1,28 +1,29 @@
 const cors = require('cors');
-const express = require("express");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-const bodyParser = require("body-parser");
-
-const authRoutes = require("./routes/authRoutes");
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const requestRoutes = require('./routes/requestRoutes');
+// const donationRoutes = require('./routes/donationRoutes');
 
 dotenv.config();
-connectDB();
+//connectDB();
+connectDB().catch(error => {
+    console.error('Error connecting to the database:', error);
+    process.exit(1);
+  });
+
 
 const app = express();
 
-// Middleware to parse JSON requests
-app.use(express.json()); // This ensures `req.body` will contain the parsed JSON data
-
-// Enable CORS for all routes
-app.use(cors()); // Place this here to allow CORS for all routes
-
-// Middleware to parse JSON bodies
+app.use(express.json());
+app.use(cors());
 app.use(bodyParser.json());
 
-// Define routes
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/requests', requestRoutes);
+// app.use('/api/donations', donationRoutes);
 
-// Set up the server to listen on the specified port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
